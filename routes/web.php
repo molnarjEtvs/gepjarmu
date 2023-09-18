@@ -1,11 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AutoController;
 
-Route::get('/', function () {
-    return view('lista');
-})->name('fooldal');
+Route::get('/', [AutoController::class,'listaz'])->name('fooldal');
 
-Route::get('/felvetel', function () {
-    return view('felvetel');
-})->name('felvetel');
+Route::get('/felvetel', [AutoController::class,'felvetel'])->name('felvetel');
