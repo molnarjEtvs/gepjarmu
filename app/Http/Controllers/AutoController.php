@@ -19,7 +19,7 @@ class AutoController extends Controller
                            "O" => "Összkerék"];
     
     public function listaz(){
-        $autok = Auto::all();
+        $autok = Auto::paginate(2);
         return view('lista',["autok" => $autok,"motorTipusok" => $this->motorTipusok,"meghajtasok" => $this->meghajtasok]);
     }
 
@@ -69,5 +69,50 @@ class AutoController extends Controller
         $szinek = Szin::all();
 
         return view('felvetel',["auto" => $auto ,"motorTipusok" => $this->motorTipusok,"meghajtasok" => $this->meghajtasok,"szinek" => $szinek]);
+    }
+
+    public function modositasMentese(Request $req, $aid){
+        $auto = Auto::find($aid);
+        if($auto !== NULL){
+            $req->validate(
+                [
+                    "rendszam" => "required|min:6|max:10|alpha_num:ascii",
+                    "motor_tipus" => "required",
+                    "szin_id" => "required|min:1",
+                    "meghajtas" => "required"
+                ],
+                [
+                    "rendszam.required" => "A mező kitöltése kötelező",
+                    "rendszam.min" => "Minimum 6 karakter adj meg",
+                    "rendszam.max" => "Maximum 10 karaktert adj meg",
+                    "rendszam.alpha_num" => "Csak a-Z és 0-9",
+    
+                    "motor_tipus.required" => "Válassz motor típust",
+                    
+                    "szin_id.required" => "Válassz színt!",
+                    "szin_id.min" => "Válassz színt!",
+    
+                    "meghajtas.required" => "Váláassz meghatási módot!"
+                    
+                ]
+            );
+            $auto->rendszam = $req->input('rendszam');
+            $auto->szin_id = $req->input('szin_id');
+            $auto->meghajtas = $req->input('meghajtas');
+            $auto->motor_tipus = $req->input('motor_tipus');
+            $auto->save();
+
+            return redirect('/modositas/'.$aid)->with("modositasKesz",'1');
+        }else{
+           return redirect("/"); 
+        }
+    }
+
+
+    public function torles(Request $req){
+        $auto=Auto::find($req->input('aid'));
+        $auto->delete();
+        $data['error'] = false;
+        return response()->json($data);
     }
 }

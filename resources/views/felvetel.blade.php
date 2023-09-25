@@ -18,6 +18,14 @@
                             </div>
                         @endif
 
+                        @if (session()->has('modositasKesz'))
+                            <div class="alert alert-success">
+                                A módosítás sikeres!
+                            </div>
+                        @endif
+
+                        
+
                         @csrf
                         <div>
                             <label for="rendszam">Rendszám:</label>

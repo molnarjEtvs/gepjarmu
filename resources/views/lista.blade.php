@@ -17,7 +17,7 @@
                             <th>Törlés</th>
                         </tr>
                         @foreach ($autok as $auto)
-                            <tr>
+                            <tr id="sor_{{ $auto->a_id }}">
                                 <td>{{ $auto->a_id }}</td>
                                 <td>{{ $auto->rendszam }}</td>
                                 <td> {{ $motorTipusok[$auto->motor_tipus] }} </td>
@@ -27,15 +27,47 @@
                                     <a href="./modositas/{{$auto->a_id}}" class="btn btn-sm btn-dark">módosítás</a>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-sm btn-danger">törlés</button>
+                                    <button id="torlesGomb_{{$auto->a_id}}" type="button" onclick="torles({{$auto->a_id}});" class="btn btn-sm btn-danger">törlés</button>
                                 </td>
                             </tr>
                         @endforeach
                             
                     </table>
+
+                    {{ $autok->links() }}
                 </div>
             </div>
         </div>
     </div>
-    
+
+<script>
+
+function torles(aid){
+    $.ajax(
+        {
+            url:"./torles",
+            type: "POST",
+            cache:false,
+            async:false,
+            data:{"aid":aid},
+            headers:{
+                "X-CSRF-TOKEN":$('meta[name="csrf-token"]').attr('content')
+            },
+            beforeSend:function(){
+                $("#torlesGomb_"+aid).attr("disabled",true);
+                $("#torlesGomb_"+aid).html("Folyamatban....");
+            },
+            success:function(data){
+                if(data.error == false){
+                    $("#sor_"+aid).remove();
+                }else{
+                    $("#torlesGomb_"+aid).attr("disabled",false);
+                    $("#torlesGomb_"+aid).html("Törlés");
+                }
+            }
+        }
+    );
+}
+
+</script>
 @endsection
